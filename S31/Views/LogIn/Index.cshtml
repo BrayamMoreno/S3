@@ -1,0 +1,57 @@
+﻿@using S31.Models
+@model Usuario
+
+
+<!DOCTYPE html>
+
+
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<link rel="stylesheet" href="css/login.css">
+	<title>Login Page</title>
+</head>
+
+<body>
+	
+	<form asp-controller="LogIn" asp-action="LogIn" method="post">
+		<div class="login-box">
+			<h1>Welcome to Provider Images Procalculo</h1>
+
+			@if (TempData["ErrorCredenciales"] != null)
+			{
+				<div class="alert alert-success"><strong>¡Cuidado!</strong>@TempData["ErrorCredenciales"]?.ToString()</div>
+			}
+
+			@if (TempData["ErrorCampos"] != null)
+			{
+				<div class="alert alert-danger"><strong>¡Cuidado!</strong>@TempData["ErrorCampos"].ToString()</div>
+			}
+
+			<div class="textbox">
+				<i class="fa fa-user" aria-hidden="true"></i>
+				<input type="text" placeholder="Access Key"
+					   name="Nombre" value="">
+			</div>
+
+			<div class="textbox">
+				<i class="fa fa-lock" aria-hidden="true"></i>
+				<input type="password" placeholder="Secret Access Key "
+					   name="Contraseña" value="">
+			</div>
+
+			<div class="textbox">
+				<i class="fa fa-folder-open" aria-hidden="true"></i>
+				<input type="text" placeholder="URL Bucket S3"
+					   name="Cubeta" value="">
+			</div>
+			<input class="button" type="submit"
+				   name="logIn" value="Sign In">
+		</div>
+	</form>
+</body>
+</html>

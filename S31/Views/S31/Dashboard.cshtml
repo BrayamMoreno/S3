@@ -1,0 +1,130 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>Procalculo Prosis</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <link rel="stylesheet" href="css/estilos.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/css/all.css">
+
+    <script>
+        function showFilesByGroup(selectedGroup) {
+            const groupRows = document.querySelectorAll(".group-row");
+            const fileRows = document.querySelectorAll(".file-row");
+
+            groupRows.forEach(groupRow => {
+                const groupName = groupRow.dataset.group;
+                if (groupName === selectedGroup || selectedGroup === "all") {
+                    groupRow.style.display = "table-row";
+                } else {
+                    groupRow.style.display = "none";
+                }
+            });
+
+            fileRows.forEach(fileRow => {
+                const groupName = fileRow.dataset.group;
+                if (groupName === selectedGroup || selectedGroup === "all") {
+                    fileRow.style.display = "table-row";
+                } else {
+                    fileRow.style.display = "none";
+                }
+            });
+        }
+
+        function searchFiles() {
+            const input = document.getElementById("searchInput").value.trim().toLowerCase();
+            const fileRows = document.querySelectorAll(".file-row");
+
+            fileRows.forEach(fileRow => {
+                const fileName = fileRow.querySelector("td:first-child").textContent.trim().toLowerCase();
+                if (fileName.includes(input)) {
+                    fileRow.style.display = "table-row";
+                } else {
+                    fileRow.style.display = "none";
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+
+    <header>
+        <div class="alert alert-info">
+            <h3>Procalculo - Descargar de Imagen</h3>
+        </div>
+
+        <div class="float-right">
+            <button>
+                <a asp-controller="LogIn" asp-action="LogOut">Salir</a>
+            </button>
+        </div>
+    </header>
+
+    <div>
+        <form class="form-inline" method="post" id="uploadFile" enctype="multipart/form-data" asp-action="UploadFile">
+            <div class="form-group">
+                <input type="file" class="form-control" name="file" id="file">
+            </div>
+            <button type="submit" class="btn btn-primary">Cargar</button>
+        </form>
+
+        @if (TempData["Status"] != null)
+        {
+            <div class="alert alert-info"><strong>¡Cuidado!</strong>@TempData["Status"].ToString()</div>
+        }
+        <br />
+    </div>
+
+    <div class="container">
+        <form class="form-inline">
+            <label for="groupSelect">Selecciona una carpeta:</label>
+            <select id="groupSelect" onchange="showFilesByGroup(this.value)">
+                <option value="all">Mostrar todas las carpetas</option>
+                @foreach (var group in Model)
+                {
+                    <option value="@group.GroupName">@group.GroupName</option>
+                }
+            </select>
+            <label for="searchInput"> Buscar archivo:</label>
+            <input type="text" id="searchInput" oninput="searchFiles()" placeholder="Ingrese el nombre del archivo">
+        </form>
+
+        <br />
+
+        <table class="table-responsive">
+            <thead class="bg-primary text-white">
+                <tr>
+                    <th scope="col">Archivo</th>
+                    <th scope="col">Origen</th>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Tamaño</th>
+                    <th scope="col">Descargar</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var group in Model)
+                {
+                    <tr class="group-row" data-group="@group.GroupName">
+                        <td colspan="5"><b>@group.GroupName</b></td>
+                    </tr>
+                    @foreach (var file in group.Files)
+                    {
+                        <tr class="file-row" data-group="@group.GroupName">
+                            <td>@file.Key</td>
+                            <td>Bucket S3 - AWS</td>
+                            <td>@file.LastModified</td>
+                            <td>@file.Size</td>
+                            <td>
+                                <a class="fas fa-download" asp-action="Download" asp-route-key="@file.Key">Descargar</a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>
